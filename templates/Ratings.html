@@ -18,13 +18,16 @@
                 <input type="text" name="0671746693Rating" value="">
             </label>
         </li>
+        {% for x in Acccc %}
         <li id="{{ ISBN }}">
+        <p>{{ x }}</p>
             <p>书名：{{ Title }}，作者：{{ Author }}</p>
-            <img src="{{ fengMian }}" width="150px" alt="图书封面">
+            <img src="{{ fengMian[0] }}" width="150px" alt="图书封面">
             <label>
                 <input type="text" name="{{ ISBN }}Rating" value="">
             </label>
         </li>
+        {% endfor %}
         <li>Hello</li>
         <li>Hello</li>
     </ol>
