@@ -166,11 +166,12 @@ class BookBookRecommended(object):
         else:
             print("错误，请重现选择：TrainingOrLoad若为T则重新训练，为L则加载已训练好的模型")
 
-    def getBookInfo(self, booksInfo, bookISBNList):
+    def getBookInfo(self, booksInfo, bookISBNList,suijichou=True):
         """
         根据书籍文件信息和ISBN列表，提取出封面作者书名等信息并返回
         :param booksInfo:
         :param bookISBNList:
+        suijichou: 开启代表没有的时候可以随机抽
         :return:
         """
         print("当前一轮{}个ISBN".format(len(bookISBNList)))
@@ -186,9 +187,10 @@ class BookBookRecommended(object):
                 bookAuthorList.append(list(bookInfo["Book-Author"].values)[0])
                 bookTitleList.append(list(bookInfo["Book-Title"].values)[0])
             except IndexError:
-                print("***********没找到这个书，重新再抽书***********")
-                # 如果失误，则再次随机抽几个
-                return self.getBookInfo(booksInfo, random.sample(BRS.ISBN_list, len(bookISBNList)))
+                if suijichou:
+                    print("***********没找到这个书，重新再抽书***********")
+                    # 如果失误，则再次随机抽几个
+                    return self.getBookInfo(booksInfo, random.sample(self.ISBN_list, len(bookISBNList)))
         else:
             return bookTitleList, bookAuthorList, bookPicList, bookISBNList
 
