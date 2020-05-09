@@ -5,10 +5,10 @@ import time
 import numpy as np
 import pandas as pd
 
-from DataLoader import DataLoader
+from src.DataLoader import DataLoader
 
 
-class BookBookRecommendedSystem(object):
+class BookBookRecommended(object):
     """
     M：用户数、N：物品数
     @输入参数：
@@ -148,56 +148,53 @@ class BookBookRecommendedSystem(object):
         # ISBN列表与评分列表，相应位置一一对应
         return ISBN_topN, list(info[index_a])
 
+    def loadModel(self, TrainingOrLoad):
+        if TrainingOrLoad == "T":
+            print("{} — 开始训练".format(nowTime()))
+            # 训练模型
+            self.ffit(rating_num=conf["rating_num"])
+        elif TrainingOrLoad == "L":
+            print("{} — 开始读取已训练完成的模型".format(nowTime()))
+            oldModel = np.load("./Model/BookRecommendedModel.npy")
+            with open("./Model/user_list", "r") as f:
+                user_list = eval(f.read())
+            with open("./Model/ISBN_list", "r") as f:
+                ISBN_list = eval(f.read())
+            self.R = oldModel
+            self.user_list = user_list
+            self.ISBN_list = ISBN_list
+        else:
+            print("错误，请重现选择：TrainingOrLoad若为T则重新训练，为L则加载已训练好的模型")
+
+    def getBookInfo(self, booksInfo, bookISBNList):
+        """
+        根据书籍文件信息和ISBN列表，提取出封面作者书名等信息并返回
+        :param booksInfo:
+        :param bookISBNList:
+        :return:
+        """
+        print("当前一轮{}个ISBN".format(len(bookISBNList)))
+        bookPicList = []
+        bookAuthorList = []
+        bookTitleList = []
+        for bookISBN in bookISBNList:
+            bookInfo = booksInfo[booksInfo["ISBN"] == bookISBN]
+            print(bookISBN)
+            print(bookInfo)
+            try:
+                bookPicList.append(list(bookInfo["Image-URL-L"].values)[0])
+                bookAuthorList.append(list(bookInfo["Book-Author"].values)[0])
+                bookTitleList.append(list(bookInfo["Book-Title"].values)[0])
+            except IndexError:
+                print("***********没找到这个书，重新再抽书***********")
+                # 如果失误，则再次随机抽几个
+                return self.getBookInfo(booksInfo, random.sample(BRS.ISBN_list, len(bookISBNList)))
+        else:
+            return bookTitleList, bookAuthorList, bookPicList, bookISBNList
+
 
 def nowTime():
     return time.strftime('%Y.%m.%d %H:%M:%S', time.localtime(time.time()))
-
-
-def loadModel(TrainingOrLoad):
-    if TrainingOrLoad == "T":
-        print("{} — 开始训练".format(nowTime()))
-        # 训练模型
-        BRS.fit(rating_num=conf["rating_num"])
-    elif TrainingOrLoad == "L":
-        print("{} — 开始读取已训练完成的模型".format(nowTime()))
-        oldModel = np.load("../Model/BookRecommendedModel.npy")
-        with open("../Model/user_list", "r") as f:
-            user_list = eval(f.read())
-        with open("../Model/ISBN_list", "r") as f:
-            ISBN_list = eval(f.read())
-        BRS.R = oldModel
-        BRS.user_list = user_list
-        BRS.ISBN_list = ISBN_list
-    else:
-        print("错误，请重现选择：TrainingOrLoad若为T则重新训练，为L则加载已训练好的模型")
-
-
-def getBookInfo(booksInfo, bookISBNList):
-    """
-    根据书籍文件信息和ISBN列表，提取出封面作者书名等信息并返回
-    :param booksInfo:
-    :param bookISBNList:
-    :return:
-    """
-    print("当前一轮{}个ISBN".format(len(bookISBNList)))
-    bookPicList = []
-    bookAuthorList = []
-    bookTitleList = []
-    for bookISBN in bookISBNList:
-        bookInfo = booksInfo[booksInfo["ISBN"] == bookISBN]
-        print(bookISBN)
-        print(bookInfo)
-        try:
-            bookPicList.append(list(bookInfo["Image-URL-L"].values)[0])
-            bookAuthorList.append(list(bookInfo["Book-Author"].values)[0])
-            bookTitleList.append(list(bookInfo["Book-Title"].values)[0])
-        except IndexError:
-            print("***********没找到这个书，重新再抽书***********")
-            # 如果失误，则再次随机抽几个
-            return getBookInfo(booksInfo, random.sample(BRS.ISBN_list, len(bookISBNList)))
-
-    else:
-        return bookTitleList, bookAuthorList, bookPicList, bookISBNList
 
 
 if __name__ == "__main__":
@@ -210,11 +207,11 @@ if __name__ == "__main__":
     # 根据配置文件选择重新训练还是加载已经训练好的模型
     # T为重新训练，L为加载已训练好的模型
     # 图书推荐系统
-    BRS = BookBookRecommendedSystem(K=5)
+    BRS = BookBookRecommended(K=5)
     print("{} — 开始训练/读取已训练的模型".format(nowTime()))
 
     # 加载模型（内部会根据配置文件选择重新训练还是加载已有的模型）
-    loadModel(conf["TrainingOrLoad"])
+    BRS.loadModel(conf["TrainingOrLoad"])
 
     """
     这里可以手动从本地读取已训练好的模型与2个列表（已封装）
@@ -235,7 +232,8 @@ if __name__ == "__main__":
     # newbooklist = ["034545104X", '0155061224', '0446520802', '052165615X', '0521795028']
     # 随机选择几本书让用户评分
     newbooklist = random.sample(BRS.ISBN_list, 5)
-    bookInfo = getBookInfo(booksInfo, newbooklist)
+    # 获取书籍详细的信息
+    bookInfo = BRS.getBookInfo(booksInfo, newbooklist)
     print("呈现给用户的书籍的ISBN为：{}".format(bookInfo[3]))
     print("呈现给用户的书籍的名字为：{}".format(bookInfo[0]))
     print("呈现给用户的书籍的作者为：{}".format(bookInfo[1]))

@@ -22,11 +22,13 @@
 {#                <input type="text" name="0671746693Rating" value="">#}
 {#            </label>#}
 {#        </li>#}
+
+{#        Acccc为长度信息#}
         {% for x in Acccc %}
             <li id="{{ ISBNList[x] }}">
                 <p>{{ x }}</p>
-                <p>书名：{{ Title }}，作者：{{ Author }}，ISBN：{{ ISBNList[x] }}</p>
-                <img src="{{ fengMian[0] }}" width="150px" alt="图书封面">
+                <p>书名：{{ Title[x] }}，作者：{{ Author[x] }}，ISBN：{{ ISBNList[x] }}</p>
+                <img src="{{ fengMian[x] }}" width="150px" alt="图书封面">
                 <label>
                     <input type="text" name="Ratings" value="{{ x }}">
                 </label>

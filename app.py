@@ -1,5 +1,9 @@
+import random
+
 from flask import Flask, make_response, render_template, request
 from urllib.parse import parse_qs
+from src import BookRecommended
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -16,13 +20,23 @@ def Ratings():
     在这里，需要ISBN号、以及其封面、作者名、书名(都是列表)
     :return:
     """
-    ISBNList = ['0886774632', '050552600X', '1558686274', '0440223202', '0312966776']
+    # 随机选择几本书让用户评分
+    global BR
+    newbooklist = random.sample(BR.ISBN_list, 5)
+    # 获取书籍详细的信息
+    bookInfo = BR.getBookInfo(booksInfo, newbooklist)
+    print("呈现给用户的书籍的ISBN为：{}".format(bookInfo[3]))
+    print("呈现给用户的书籍的名字为：{}".format(bookInfo[0]))
+    print("呈现给用户的书籍的作者为：{}".format(bookInfo[1]))
+    print("呈现给用户的书籍的封面为：{}".format(bookInfo[2]))
+
+    ISBNList = bookInfo[3]
     res = make_response(render_template("Ratings.html",
                                         Acccc=range(len(ISBNList)),
                                         ISBNList=ISBNList,
-                                        fengMian=["http://images.amazon.com/images/P/0425176428.01.LZZZZZZZ.jpg"],
-                                        Title="IF you",
-                                        Author="AAAA"))
+                                        fengMian=bookInfo[2],
+                                        Title=bookInfo[0],
+                                        Author=bookInfo[1]))
     return res
 
 
@@ -51,4 +65,15 @@ def submitinfo():
 
 
 if __name__ == '__main__':
+    print("********************************************执行了{}".format("__name__ == '__main__'"))
+    BR = BookRecommended.BookBookRecommended(K=5)
+    # 加载配置文件
+    with open("src/conf.json", "r") as f:
+        conf = eval(f.read())
+    # 加载书籍信息文件
+    booksInfo = pd.read_csv("./data/BX-Books.csv", sep=";", encoding="utf-8")
+
+    # 加载模型（内部会根据配置文件选择重新训练还是加载已有的模型）
+    BR.loadModel(conf["TrainingOrLoad"])
     app.run(host="0.0.0.0", port=80)
+
