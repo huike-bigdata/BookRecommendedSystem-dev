@@ -7,14 +7,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
-
-@app.route('/')
-def hello_world():
-    res = make_response(render_template("index.html"))
-    return res
-
-
-@app.route("/Ratings")
+@app.route("/")
 def Ratings():
     """
     在这里，需要ISBN号、以及其封面、作者名、书名(都是列表)
@@ -34,7 +27,7 @@ def Ratings():
 
     ISBNList = bookInfo[3]
     # ISBNList:用户打分的书籍列表
-    res = make_response(render_template("Ratings.html",
+    res = make_response(render_template("index.html",
                                         Acccc=range(len(ISBNList)),
                                         ISBNList=ISBNList,
                                         fengMian=bookInfo[2],
@@ -46,7 +39,7 @@ def Ratings():
 @app.route("/submitinfo", methods=["GET", "POST"])
 def submitinfo():
     if request.method == "GET":
-        res = make_response(render_template("Ratings.html"))
+        res = make_response(render_template("index.html"))
         return res
     elif request.method == "POST":
         # print(type(request.files))
@@ -77,8 +70,8 @@ def submitinfo():
         ISBN_topN, Rating_topN = BR.getTopRatings(topnum=5, ISBNS=ISBNList, user_id=88)
         print("{} — 预测完成".format(BookRecommended.nowTime()))
         print("推荐您阅读：{}".format(ISBN_topN), Rating_topN)
-        # res = make_response(render_template("Ratings.html"))
-        return "提交成功，<a href=\"/showRecommended\">跳转</a>"
+        # res = make_response(render_template("index.html"))
+        return "提交成功，<a href=\"/showRecommended\">点我查看为您推荐的书籍</a>"
     else:
         return "error"
 
