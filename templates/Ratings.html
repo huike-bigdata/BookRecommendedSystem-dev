@@ -9,6 +9,7 @@
 </head>
 <body>
 <h3>请给这些书打分（1-10），我们将以此为依据为您推荐图书</h3>
+<span>如果看不到封面，请刷新重试，原因是封面图片服务器返回的是空图。</span>
 <form method="post" action="/submitinfo">
 {#    <label>#}
 {#        <input type="text" name="001" value="0001">#}
@@ -28,14 +29,14 @@
             <li id="{{ ISBNList[x] }}">
                 <p>书名：{{ Title[x] }}，作者：{{ Author[x] }}，ISBN：{{ ISBNList[x] }}</p>
                 <img src="{{ fengMian[x] }}" width="150px" alt="图书封面">
-                <p>评分：</p>
+                <span>评分：</span>
                 <label>
                     <input type="text" name="Ratings" value="{{ x }}">
                 </label>
             </li>
         {% endfor %}
     </ol>
-    <input type="submit" value="提交评分">
+    <input type="submit" value="提交评分" style='font-size:20px'>
 </form>
 
 <a href="/">点我回首页</a>
