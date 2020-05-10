@@ -189,7 +189,7 @@ class BookBookRecommended(object):
                 bookTitleList.append(list(bookInfo["Book-Title"].values)[0])
             except IndexError:
                 if suijichou:
-                    print("***********没找到这个书，重新再抽书***********")
+                    print("***********详细信息中没找到这个书，重新再抽书***********")
                     # 如果失误，则再次随机抽几个
                     return self.getBookInfo(booksInfo, random.sample(self.ISBN_list, len(bookISBNList)))
         else:

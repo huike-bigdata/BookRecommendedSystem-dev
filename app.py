@@ -17,14 +17,14 @@ def Ratings():
     # 随机选择几本书让用户评分
     global BR
     global ISBNList
-    newbooklist = random.sample(BR.ISBN_list, 5)
+    newbooklist = random.sample(BR.ISBN_list, RatingBookNum)
     # 获取书籍详细的信息
 
     bookInfo = BR.getBookInfo(booksInfo, newbooklist)
-    print("呈现给用户的书籍的ISBN为：{}".format(bookInfo[3]))
-    print("呈现给用户的书籍的名字为：{}".format(bookInfo[0]))
-    print("呈现给用户的书籍的作者为：{}".format(bookInfo[1]))
-    print("呈现给用户的书籍的封面为：{}".format(bookInfo[2]))
+    print("{} — 呈现给用户的书籍的ISBN为：{}".format(BookRecommended.nowTime(), bookInfo[3]))
+    print("{} — 呈现给用户的书籍的名字为：{}".format(BookRecommended.nowTime(), bookInfo[0]))
+    print("{} — 呈现给用户的书籍的作者为：{}".format(BookRecommended.nowTime(), bookInfo[1]))
+    print("{} — 呈现给用户的书籍的封面为：{}".format(BookRecommended.nowTime(), bookInfo[2]))
 
     ISBNList = bookInfo[3]
     # ISBNList:用户打分的书籍列表
@@ -99,6 +99,8 @@ def showRecommended():
 
 if __name__ == '__main__':
     print("{} — *********图书推荐系统启动***********".format(BookRecommended.nowTime()))
+
+    RatingBookNum = 6
     BR = BookRecommended.BookBookRecommended(K=5)
     print("{} — 加载配置文件".format(BookRecommended.nowTime()))
     # 加载配置文件
