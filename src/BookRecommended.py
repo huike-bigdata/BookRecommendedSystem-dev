@@ -163,6 +163,7 @@ class BookBookRecommended(object):
             self.R = oldModel
             self.user_list = user_list
             self.ISBN_list = ISBN_list
+            print("{} — 已训练完成的模型读取成功".format(nowTime()))
         else:
             print("错误，请重现选择：TrainingOrLoad若为T则重新训练，为L则加载已训练好的模型")
 
@@ -174,14 +175,14 @@ class BookBookRecommended(object):
         suijichou: 开启代表没有的时候可以随机抽
         :return:
         """
-        print("当前一轮{}个ISBN".format(len(bookISBNList)))
+        # print("当前一轮{}个ISBN".format(len(bookISBNList)))
         bookPicList = []
         bookAuthorList = []
         bookTitleList = []
         for bookISBN in bookISBNList:
             bookInfo = booksInfo[booksInfo["ISBN"] == bookISBN]
-            print(bookISBN)
-            print(bookInfo)
+            # print(bookISBN)
+            # print(bookInfo)
             try:
                 bookPicList.append(list(bookInfo["Image-URL-L"].values)[0])
                 bookAuthorList.append(list(bookInfo["Book-Author"].values)[0])
@@ -204,7 +205,7 @@ if __name__ == "__main__":
         conf = eval(f.read())
     # with open("../data/BX-Books.csv") as f:
     # booksInfo = pd.read_csv("../data/BX-Books.csv", sep="\";\"", encoding="utf-8")
-    booksInfo = pd.read_csv("../data/BX-Books.csv", sep=";", encoding="utf-8")
+    booksInfo = pd.read_csv("../data/BX-Books.csv", sep=";", encoding="utf-8", low_memory=False)
 
     # 根据配置文件选择重新训练还是加载已经训练好的模型
     # T为重新训练，L为加载已训练好的模型
@@ -257,4 +258,4 @@ if __name__ == "__main__":
     # 取出单用户预测的TopN评分
     ISBN_topN, Rating_topN = BRS.getTopRatings(topnum=5, ISBNS=newbooklist)
     print("{} — 预测完成".format(nowTime()))
-    print("推荐您阅读：{}".format(ISBN_topN), Rating_topN)
+    print("推荐您阅读：{}\n预计评分为：".format(ISBN_topN), Rating_topN)

@@ -1,11 +1,12 @@
 import random
-
+import pandas as pd
+from wsgiref.simple_server import make_server
 from flask import Flask, make_response, render_template, request
 from urllib.parse import parse_qs
 from src import BookRecommended
-import pandas as pd
 
 app = Flask(__name__)
+
 
 @app.route("/")
 def Ratings():
@@ -97,14 +98,17 @@ def showRecommended():
 
 
 if __name__ == '__main__':
-    print("********************************************执行了{}".format("__name__ == '__main__'"))
+    print("*********图书推荐系统启动***********")
     BR = BookRecommended.BookBookRecommended(K=5)
     # 加载配置文件
     with open("src/conf.json", "r") as f:
         conf = eval(f.read())
     # 加载书籍信息文件
-    booksInfo = pd.read_csv("./data/BX-Books.csv", sep=";", encoding="utf-8")
+    booksInfo = pd.read_csv("./data/BX-Books.csv", sep=";", encoding="utf-8", low_memory=False)
 
     # 加载模型（内部会根据配置文件选择重新训练还是加载已有的模型）
     BR.loadModel(conf["TrainingOrLoad"])
-    app.run(host="0.0.0.0", port=80)
+    server = make_server('0.0.0.0', 80, app)
+    server.serve_forever()
+    app.run()
+    # app.run(host="0.0.0.0", port=80)
