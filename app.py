@@ -80,10 +80,10 @@ def submitinfo():
 @app.route("/showRecommended")
 def showRecommended():
     bookInfo = BR.getBookInfo(booksInfo, ISBN_topN, suijichou=False)
-    print("呈现给用户的书籍的ISBN为：{}".format(bookInfo[3]))
-    print("呈现给用户的书籍的名字为：{}".format(bookInfo[0]))
-    print("呈现给用户的书籍的作者为：{}".format(bookInfo[1]))
-    print("呈现给用户的书籍的封面为：{}".format(bookInfo[2]))
+    print("{} — 呈现给用户的书籍的ISBN为：{}".format(BookRecommended.nowTime(), bookInfo[3]))
+    print("{} — 呈现给用户的书籍的名字为：{}".format(BookRecommended.nowTime(), bookInfo[0]))
+    print("{} — 呈现给用户的书籍的作者为：{}".format(BookRecommended.nowTime(), bookInfo[1]))
+    print("{} — 呈现给用户的书籍的封面为：{}".format(BookRecommended.nowTime(), bookInfo[2]))
 
     showISBNList = bookInfo[3]
     # ISBNList:展示给用户的推荐书籍
@@ -98,11 +98,13 @@ def showRecommended():
 
 
 if __name__ == '__main__':
-    print("*********图书推荐系统启动***********")
+    print("{} — *********图书推荐系统启动***********".format(BookRecommended.nowTime()))
     BR = BookRecommended.BookBookRecommended(K=5)
+    print("{} — 加载配置文件".format(BookRecommended.nowTime()))
     # 加载配置文件
     with open("src/conf.json", "r") as f:
         conf = eval(f.read())
+    print("{} — 加载书籍信息文件".format(BookRecommended.nowTime()))
     # 加载书籍信息文件
     booksInfo = pd.read_csv("./data/BX-Books.csv", sep=";", encoding="utf-8", low_memory=False)
 
