@@ -8,6 +8,11 @@ from src import BookRecommended
 app = Flask(__name__)
 
 
+@app.route("/status")
+def getStatus():
+    return "OK"
+
+
 @app.route("/")
 def Ratings():
     """
